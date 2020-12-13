@@ -26,6 +26,10 @@ fn main() {
             .takes_value(true)
             .long("chunk_size")
             .help("The number of bytes put into one line"))
+        .arg(Arg::with_name("noprintables")
+            // .takes_value(true)
+            .long("noprintables")
+            .help("Add printables as a comment"))
         .arg(Arg::with_name("name")
             .takes_value(true)
             .long("name")
@@ -49,9 +53,12 @@ fn main() {
         false => 10,
     };
 
+    let printables = !matches.is_present("noprintables");
+
     let cfg = Cfg {
         name: name.to_string(),
         chunk_length: chunk_size,
+        printables: printables,
     };
 
     match matches.value_of("lang") {
@@ -61,4 +68,5 @@ fn main() {
         Some("rust") => println!("{}", rust_string(&buffer, &cfg)),
         _ => println!("Unknown programming language")
     }
+
 }
