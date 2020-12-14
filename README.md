@@ -6,6 +6,14 @@ Comments of printables can be disabled by the option `--noprintables`.
 
 ![](static/stringliner-demo.gif)
 
+## Usage
+
+```shell
+stringliner -f path_to_your_file # from file
+stringliner # from STDIN
+```
+
+
 ## Examples
 
 ``` sh
