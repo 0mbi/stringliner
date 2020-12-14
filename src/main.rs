@@ -8,6 +8,8 @@ use crate::generators::python::python_string;
 use crate::generators::config::Cfg;
 use std::io::{self, Read};
 use crate::generators::golang::go_string;
+use std::fs::File;
+use std::io::BufReader;
 
 fn main() {
 
@@ -29,17 +31,33 @@ fn main() {
         .arg(Arg::with_name("noprintables")
             // .takes_value(true)
             .long("noprintables")
-            .help("Add printables as a comment"))
+            .help("Set printables as a comment OFF"))
         .arg(Arg::with_name("name")
             .takes_value(true)
             .long("name")
             .help("The name of the generated variable"))
+        .arg(Arg::with_name("filename")
+            .takes_value(true)
+            .long("filename")
+            .short("f")
+            .help("filename to be loaded (instead of STDIN"))
         .get_matches();
 
     let mut buffer: Vec<u8> = Vec::new();
-    let stdin = io::stdin();
-    let mut handle = stdin.lock();
-    handle.read_to_end(&mut buffer);
+    match matches.is_present("filename") {
+       true => { // filename set, load filename
+           dbg!("true");
+           let file = File::open(matches.value_of("filename").unwrap()).unwrap();
+           let mut buf_reader = BufReader::new(file);
+           buf_reader.read_to_end(&mut buffer);
+       },
+       false => { // filename not set, use STDIN
+           dbg!("false");
+           let stdin = io::stdin();
+           let mut handle = stdin.lock();
+           handle.read_to_end(&mut buffer);
+       },
+    }
 
     let name = match matches.is_present("name") {
         true => matches.value_of("name").unwrap(),
